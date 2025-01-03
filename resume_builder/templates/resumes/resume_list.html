@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Resumes</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'resumes/styles.css' %}">
+</head>
+<body>
+    <h2>Your Resumes</h2>
+    <ul>
+        {% for resume in resumes %}
+            <li> name - {{ resume.name }}</li>
+            <li> email - {{ resume.email }}</li>
+            <li> phone no. - {{ resume.phone}}</li>
+            <li> linkedin id - {{ resume.linkedin }}</li>
+            <li> objective - {{ resume.objective }}</li>
+            <li> skills - {{ resume.skills}}</li>
+            <li> experience - {{ resume.experience}}</li>
+            <li> education- {{ resume.education}}</li>
+            <li> job_role - {{ resume.job_role}}</li>
+            {% if resume.ai_generated_resume %} 
+                <li><strong>AI-Generated Resume:</strong></li>
+                <pre class="ai-resume">{{ resume.ai_generated_resume }}</pre>
+            {% endif %}
+            <br>
+            
+            {% if resume.hiring_companies %}
+                <h3>Companies Hiring for {{ resume.job_role }} in Gujarat:</h3>
+                <ul>
+                    {% for company in resume.hiring_companies %}
+                        <li>{{ company.company }} - {{ company.location }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No companies hiring for {{ resume.job_role }} in Gujarat.</p>
+            {% endif %}
+
+            <br>
+            
+        {% endfor %}
+    </ul>
+    <h2>Resume List</h2>
+    <ul>
+        {% for resume in resumes %}
+            <li>
+                {{ resume.name }} - {{ resume.job_role }}
+                <a href="{% url 'update_resume' resume.pk %}">Edit</a>
+                <a href="{% url 'delete_resume' resume.pk %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'create_resume' %}" class="button">Create New Resume</a>
+    
+
+
+</body>
+</html>
