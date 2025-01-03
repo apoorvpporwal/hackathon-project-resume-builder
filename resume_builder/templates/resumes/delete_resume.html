@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Resume</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'resumes/styles.css' %}">
+</head>
+<body>
+    <h2>Delete Resume</h2>
+    <p>Are you sure you want to delete this resume for "{{ resume.name }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, Delete</button>
+        <a href="{% url 'resume_list' %}">Cancel</a>
+    </form>
+</body>
+</html>

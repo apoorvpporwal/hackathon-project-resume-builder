@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Resume</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'resumes/styles.css' %}">
+</head>
+<body>
+    <h2>Update Resume</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+</body>
+</html>
