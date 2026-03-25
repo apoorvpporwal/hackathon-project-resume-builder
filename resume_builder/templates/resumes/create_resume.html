@@ -1,16 +1,176 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Resume</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'resumes/styles.css' %}">
-</head>
-<body>
-    <h2>Create Your Resume</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Create Resume - ResumeAI{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
+    
+    <!-- Left Column: Form -->
+    <div class="space-y-6 pb-24">
+        <div class="mb-8">
+            <h1 class="text-3xl font-heading font-bold text-white mb-2">Build Your Smart Resume</h1>
+            <p class="text-textSecondary">Fill out the details below. Our AI will analyze, enhance, and optimize it for ATS systems automatically.</p>
+        </div>
+
+        <form method="post" id="resumeForm" onsubmit="showLoader()">
+            {% csrf_token %}
+            
+            <!-- Section 1: Personal Info -->
+            <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">👤</div>
+                    <h3 class="text-lg font-heading font-semibold text-white">Personal Information</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-row">
+                        <label for="{{ form.name.id_for_label }}">Full Name</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="form-row">
+                        <label for="{{ form.email.id_for_label }}">Email</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-row">
+                        <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                        {{ form.phone }}
+                    </div>
+                    <div class="form-row">
+                        <label for="{{ form.linkedin.id_for_label }}">LinkedIn URL</label>
+                        {{ form.linkedin }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Objective & Target Job -->
+            <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">🎯</div>
+                    <h3 class="text-lg font-heading font-semibold text-white">Objective & Target Job</h3>
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.objective.id_for_label }}">Career Objective</label>
+                    <p class="text-xs text-textSecondary mb-2">Select a predefined career objective. AI will naturally blend this into your profile.</p>
+                    {{ form.objective }}
+                </div>
+                <div class="form-row mt-4">
+                    <label for="{{ form.job_description.id_for_label }}" class="flex items-center gap-2">
+                        Target Job Role <span class="bg-primary/20 text-primary text-xs px-2 py-0.5 rounded-full font-medium">Required</span>
+                    </label>
+                    <p class="text-xs text-textSecondary mb-2">Select your targeted job role to help AI optimize your resume context.</p>
+                    {{ form.job_description }}
+                </div>
+            </div>
+
+            <!-- Section 3: Experience & Education -->
+            <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400">💼</div>
+                    <h3 class="text-lg font-heading font-semibold text-white">Experience & Education</h3>
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.experience.id_for_label }}">Work Experience</label>
+                    <p class="text-xs text-textSecondary mb-2">Don't worry about perfect phrasing, our AI will inject action verbs and metrics naturally.</p>
+                    {{ form.experience }}
+                </div>
+                <div class="form-row mt-4">
+                    <label for="{{ form.education.id_for_label }}">Education</label>
+                    <p class="text-xs text-textSecondary mb-2">Select your highest level of completed education.</p>
+                    {{ form.education }}
+                </div>
+            </div>
+
+            <!-- Section 4: Skills -->
+            <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400">🛠️</div>
+                    <h3 class="text-lg font-heading font-semibold text-white">Skills</h3>
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.skills.id_for_label }}">Core Skills</label>
+                    <p class="text-xs text-textSecondary mb-2">Comma separated (e.g. Python, React, Project Management). AI will categorize them.</p>
+                    {{ form.skills }}
+                </div>
+            </div>
+
+            <!-- Sticky Generate Button inside left column mobile, floating on desktop -->
+            <div class="mt-8 z-40 relative">
+                <button type="submit" id="submitBtn" class="w-full py-4 px-6 bg-gradient-to-r from-primary to-secondary hover:from-indigo-600 hover:to-purple-600 text-white font-heading font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2">
+                    ✨ Generate Smart Resume
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Right Column: Live Preview Placeholder & Loading Overlay -->
+    <div class="hidden lg:block relative">
+        <div class="sticky top-24 w-full h-[calc(100vh-8rem)] rounded-xl overflow-hidden shadow-2xl flex items-center justify-center bg-gray-900 border border-gray-800 transition-all duration-500" id="previewContainer">
+            
+            <!-- White paper placeholder -->
+            <div class="w-[85%] h-[90%] bg-white rounded shadow-inner p-8 flex flex-col gap-4 opacity-50 blur-[2px] transition-all duration-500" id="paperPreview">
+                <div class="w-1/2 h-6 bg-gray-300 rounded mb-4"></div>
+                <div class="w-1/4 h-3 bg-gray-200 rounded"></div>
+                <div class="w-full h-px bg-gray-300 my-2"></div>
+                <div class="w-3/4 h-4 bg-gray-200 rounded mt-4"></div>
+                <div class="w-full h-3 bg-gray-200 rounded mb-1"></div>
+                <div class="w-full h-3 bg-gray-200 rounded mb-1"></div>
+                <div class="w-5/6 h-3 bg-gray-200 rounded"></div>
+                <div class="w-full h-px bg-gray-300 my-2"></div>
+                <div class="w-3/4 h-4 bg-gray-200 rounded mt-4"></div>
+                <div class="w-full h-3 bg-gray-200 rounded mb-1"></div>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div id="loadingOverlay" class="absolute inset-0 bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 transition-opacity duration-500 opacity-0 pointer-events-none">
+                <!-- Glowing Orb Spinner -->
+                <div class="relative w-24 h-24 mb-8">
+                    <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin"></div>
+                    <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse"></div>
+                </div>
+                
+                <h3 class="text-xl font-heading font-bold text-white mb-2">Generating Resume...</h3>
+                <p id="loadingStep" class="text-textSecondary font-medium tracking-wide animate-pulse">Analyzing profile data...</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function showLoader() {
+        const btn = document.getElementById('submitBtn');
+        btn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processing...
+        `;
+        btn.classList.add('opacity-80', 'cursor-not-allowed');
+        btn.classList.remove('hover:scale-[1.02]');
+        
+        const overlay = document.getElementById('loadingOverlay');
+        const paper = document.getElementById('paperPreview');
+        if(overlay) {
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            paper.classList.add('scale-95', 'blur-sm');
+        }
+
+        const steps = [
+            "Analyzing profile data...",
+            "Enhancing experience with action verbs...",
+            "Extracting keywords from Job Description...",
+            "Optimizing skills for ATS...",
+            "Simulating ATS evaluation..."
+        ];
+        const stepEl = document.getElementById('loadingStep');
+        let i = 0;
+        setInterval(() => {
+            if(i < steps.length) {
+                stepEl.innerText = steps[i];
+                i++;
+            }
+        }, 4000);
+    }
+</script>
+{% endblock %}

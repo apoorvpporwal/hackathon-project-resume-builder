@@ -1,36 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1, h2 { color: #2C3E50; }
-        .section { margin-bottom: 20px; }
-        .section h2 { font-size: 24px; }
-        .section p { font-size: 18px; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 40px; color: #111; line-height: 1.6; }
+        h1, h2, h3, h4, h5, h6 { color: #000; margin-top: 1.2em; margin-bottom: 0.5em; font-weight: 600; }
+        h1 { border-bottom: 2px solid #000; padding-bottom: 0.2em; font-size: 2.2em; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 0.2em; font-size: 1.6em; }
+        h3 { font-size: 1.3em; }
+        p, li { font-size: 11pt; margin-bottom: 0.8em; }
+        ul { padding-left: 20px; list-style-type: disc; margin-bottom: 1em; }
+        strong { font-weight: bold; }
+        a { color: #000; text-decoration: none; border-bottom: 1px dotted #000; }
+        /* Page breaks */
+        @page { margin: 1.5cm; }
     </style>
 </head>
 <body>
-    <h1>{{ resume.name }}</h1>
-    <p>Email: {{ resume.email }} | Phone: {{ resume.phone }} | LinkedIn: {{ resume.linkedin }}</p>
-    
-    <div class="section">
-        <h2>Objective</h2>
-        <p>{{ resume.objective }}</p>
-    </div>
-
-    <div class="section">
-        <h2>Skills</h2>
-        <p>{{ resume.skills }}</p>
-    </div>
-
-    <div class="section">
-        <h2>Experience</h2>
-        <p>{{ resume.experience }}</p>
-    </div>
-
-    <div class="section">
-        <h2>Education</h2>
-        <p>{{ resume.education }}</p>
-    </div>
+    {{ content|safe }}
 </body>
 </html>
