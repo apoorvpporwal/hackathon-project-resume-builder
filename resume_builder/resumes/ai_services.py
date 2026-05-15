@@ -21,46 +21,6 @@ def call_llm(prompt: str) -> str:
     except Exception as e:
         return f"Error: {e}"
 
-def enhance_experience(experience: str) -> str:
-    llm = get_llm()
-    prompt = PromptTemplate(
-        input_variables=["experience"],
-        template="""Rewrite the following experience into strong ATS-friendly bullet points.
-        Rules:
-        * Use action verbs
-        * Add measurable impact (numbers, %, results)
-        * Be concise and professional
-        
-        Input: {experience}
-        
-        Return ONLY the rewritten experience as markdown bullets."""
-    )
-    chain = prompt | llm
-    try:
-        return chain.invoke({"experience": experience}).content
-    except Exception as e:
-        return f"Error: {e}"
-
-def optimize_skills(skills: str) -> str:
-    llm = get_llm()
-    prompt = PromptTemplate(
-        input_variables=["skills"],
-        template="""Organize and optimize the following skills for ATS.
-        Rules:
-        * Group into categories (Technical, Tools, Soft Skills)
-        * Add relevant missing skills if obvious
-        * Remove redundancy
-        
-        Input: {skills}
-        
-        Return ONLY the categorized list as markdown."""
-    )
-    chain = prompt | llm
-    try:
-        return chain.invoke({"skills": skills}).content
-    except Exception as e:
-        return f"Error: {e}"
-
 def extract_keywords(job_description: str) -> str:
     if not job_description or not job_description.strip():
         return ""
@@ -78,95 +38,142 @@ def extract_keywords(job_description: str) -> str:
     except Exception as e:
         return ""
 
-def generate_resume(name: str, contact: str, objective: str, enhanced_experience: str, optimized_skills: str, education: str, keywords: str) -> str:
+
+def generate_resume(
+    name: str,
+    professional_title: str,
+    contact: str,
+    summary: str,
+    experience: str,
+    skills: str,
+    education: str,
+    projects: str,
+    certifications: str,
+    achievements: str,
+    activities: str,
+    languages: str,
+    interests: str,
+    keywords: str,
+) -> str:
     llm = get_llm()
     prompt = PromptTemplate(
-        input_variables=["name", "contact", "objective", "enhanced_experience", "optimized_skills", "education", "keywords"],
-        template="""
-You are an expert resume writer and ATS optimization system.
-
-Create a HIGH-QUALITY, ATS-OPTIMIZED, PROFESSIONAL resume in MARKDOWN format.
+        input_variables=[
+            "name", "professional_title", "contact", "summary",
+            "experience", "skills", "education", "projects",
+            "certifications", "achievements", "activities",
+            "languages", "interests", "keywords",
+        ],
+        template="""You are an elite professional resume writer. Generate a CLEAN, PROFESSIONAL, ATS-OPTIMIZED resume.
 
 STRICT RULES:
-- No explanations, no extra text, no headings like "Here is your resume"
-- Only output the resume content
-- Use clean markdown (## for sections)
-- Use strong action verbs (Built, Developed, Optimized, Led, Designed)
-- Each bullet must show IMPACT (use numbers if possible)
-- Never write "No experience provided" — instead, intelligently convert skills/projects into experience-style bullets
-- Make it look like a REAL candidate ready for hiring
+1. Output ONLY the resume — no explanations, no "Here is your resume", no commentary
+2. Use MARKDOWN formatting (# for name, ## for section headers, **bold** for emphasis)
+3. Keep it CONCISE and RECRUITER-READY — no verbose paragraphs
+4. Use strong action verbs with measurable impact (numbers, %, results)
+5. If experience is vague, intelligently rewrite it into professional bullet points with realistic impact metrics
+6. Naturally weave in these ATS keywords: {keywords}
+7. NEVER say "No experience provided" — always generate meaningful content from the data given
+8. Only include sections that have data provided. Skip empty sections entirely.
 
 ---
 
-## NAME
-{name}
+CANDIDATE DATA:
+- Name: {name}
+- Professional Title: {professional_title}
+- Contact: {contact}
+- Professional Summary: {summary}
+- Experience: {experience}
+- Skills: {skills}
+- Education: {education}
+- Projects: {projects}
+- Certifications: {certifications}
+- Achievements: {achievements}
+- Extra-Curricular Activities: {activities}
+- Languages Known: {languages}
+- Interests/Hobbies: {interests}
 
-## CONTACT
-{contact}
+---
 
-## SUMMARY
-Rewrite this into a powerful 2–3 line professional summary:
-{objective}
+FORMAT THE RESUME EXACTLY LIKE THIS:
 
-## SKILLS
-Organize into categories (Technical, Tools, Soft Skills):
-{optimized_skills}
+# CANDIDATE NAME
+email@example.com | +91 XXXXXXXXXX | City, State, Country | LinkedIn URL | GitHub URL
+
+## PROFESSIONAL SUMMARY
+2-3 concise lines summarizing the candidate's value proposition, strengths, and career goals. Written in third person or neutral tone. Must sound professional and specific to the target role.
 
 ## EXPERIENCE
-Transform this into strong resume bullet points:
-{enhanced_experience}
+**Company Name** | Location
+*Job Title* | Start Date – End Date
+- Strong bullet point starting with an action verb, explaining what you did and the measurable business impact.
+- Another bullet showing skills applied and results delivered.
 
 ## EDUCATION
-{education}
+**Institution Name** | City, State
+*Degree Name, Field of Study* | Start Year – End Year
+- CGPA/Percentage: X.XX/10 or XX% (Only if provided)
 
----
-
-KEYWORDS (must be naturally included in skills/experience):
-{keywords}
-
----
-
-OUTPUT FORMAT EXAMPLE:
-
-## NAME
-John Doe
-
-## CONTACT
-Email | Phone | LinkedIn
-
-## SUMMARY
-2–3 impactful lines
+## PROJECTS
+**Project Name** | *Technologies Used*
+- Strong bullet point explaining the project, your role, and the outcome.
+- Link: GitHub URL | Live Demo URL
 
 ## SKILLS
-**Technical:** Python, Java  
-**Tools:** Git, Docker  
-**Soft Skills:** Leadership, Communication  
+**Languages:** Skill1, Skill2, Skill3
+**Technologies/Frameworks:** Skill1, Skill2
+**Tools:** Tool1, Tool2
+**Soft Skills:** Skill1, Skill2
 
-## EXPERIENCE
-- Developed X which improved Y by Z%
-- Built X using Y
+## CERTIFICATIONS
+**Certification Name** | *Issuing Organization*
+- Issue Date: Mar 2024 | Credential ID: ABC123
 
-## EDUCATION
-Degree details
+## ACHIEVEMENTS
+- Achievement with brief context showing impact.
+
+## EXTRA-CURRICULAR ACTIVITIES
+- Activity with brief context showing leadership, teamwork, or initiative.
+
+## LANGUAGES
+Language1 (Proficiency), Language2 (Proficiency)
+
+## INTERESTS
+Interest1, Interest2, Interest3
 
 ---
 
-Now generate the final resume.
+IMPORTANT FORMATTING NOTES:
+- Use EXACTLY the headers shown above. Do not invent new headers.
+- Skills should be comma-separated on ONE line per category, NOT bulleted lists.
+- Experience and Project bullets should be concise (1-2 lines max each).
+- Keep the entire resume to 1-2 pages worth of content.
+- Do NOT use ### or deeper heading levels — only # for name and ## for sections.
+- SKIP any section entirely if no data was provided for it (don't add placeholder text).
+
+Now generate the professional resume.
 """
     )
     chain = prompt | llm
     try:
         return chain.invoke({
             "name": name,
+            "professional_title": professional_title,
             "contact": contact,
-            "objective": objective,
-            "enhanced_experience": enhanced_experience,
-            "optimized_skills": optimized_skills,
+            "summary": summary,
+            "experience": experience,
+            "skills": skills,
             "education": education,
-            "keywords": keywords
+            "projects": projects,
+            "certifications": certifications,
+            "achievements": achievements,
+            "activities": activities,
+            "languages": languages,
+            "interests": interests,
+            "keywords": keywords,
         }).content
     except Exception as e:
         return f"Error generating resume: {str(e)}"
+
 
 class ATSFeedbackDetails(BaseModel):
     ats_score: int = Field(description="ATS score (0–100)")

@@ -3,174 +3,423 @@
 {% block title %}Create Resume - ResumeAI{% endblock %}
 
 {% block content %}
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
-    
-    <!-- Left Column: Form -->
-    <div class="space-y-6 pb-24">
-        <div class="mb-8">
-            <h1 class="text-3xl font-heading font-bold text-white mb-2">Build Your Smart Resume</h1>
-            <p class="text-textSecondary">Fill out the details below. Our AI will analyze, enhance, and optimize it for ATS systems automatically.</p>
-        </div>
-
-        <form method="post" id="resumeForm" onsubmit="showLoader()">
-            {% csrf_token %}
-            
-            <!-- Section 1: Personal Info -->
-            <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">👤</div>
-                    <h3 class="text-lg font-heading font-semibold text-white">Personal Information</h3>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-row">
-                        <label for="{{ form.name.id_for_label }}">Full Name</label>
-                        {{ form.name }}
-                    </div>
-                    <div class="form-row">
-                        <label for="{{ form.email.id_for_label }}">Email</label>
-                        {{ form.email }}
-                    </div>
-                    <div class="form-row">
-                        <label for="{{ form.phone.id_for_label }}">Phone Number</label>
-                        {{ form.phone }}
-                    </div>
-                    <div class="form-row">
-                        <label for="{{ form.linkedin.id_for_label }}">LinkedIn URL</label>
-                        {{ form.linkedin }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 2: Objective & Target Job -->
-            <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">🎯</div>
-                    <h3 class="text-lg font-heading font-semibold text-white">Objective & Target Job</h3>
-                </div>
-                <div class="form-row">
-                    <label for="{{ form.objective.id_for_label }}">Career Objective</label>
-                    <p class="text-xs text-textSecondary mb-2">Select a predefined career objective. AI will naturally blend this into your profile.</p>
-                    {{ form.objective }}
-                </div>
-                <div class="form-row mt-4">
-                    <label for="{{ form.job_description.id_for_label }}" class="flex items-center gap-2">
-                        Target Job Role <span class="bg-primary/20 text-primary text-xs px-2 py-0.5 rounded-full font-medium">Required</span>
-                    </label>
-                    <p class="text-xs text-textSecondary mb-2">Select your targeted job role to help AI optimize your resume context.</p>
-                    {{ form.job_description }}
-                </div>
-            </div>
-
-            <!-- Section 3: Experience & Education -->
-            <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400">💼</div>
-                    <h3 class="text-lg font-heading font-semibold text-white">Experience & Education</h3>
-                </div>
-                <div class="form-row">
-                    <label for="{{ form.experience.id_for_label }}">Work Experience</label>
-                    <p class="text-xs text-textSecondary mb-2">Don't worry about perfect phrasing, our AI will inject action verbs and metrics naturally.</p>
-                    {{ form.experience }}
-                </div>
-                <div class="form-row mt-4">
-                    <label for="{{ form.education.id_for_label }}">Education</label>
-                    <p class="text-xs text-textSecondary mb-2">Select your highest level of completed education.</p>
-                    {{ form.education }}
-                </div>
-            </div>
-
-            <!-- Section 4: Skills -->
-            <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400">🛠️</div>
-                    <h3 class="text-lg font-heading font-semibold text-white">Skills</h3>
-                </div>
-                <div class="form-row">
-                    <label for="{{ form.skills.id_for_label }}">Core Skills</label>
-                    <p class="text-xs text-textSecondary mb-2">Comma separated (e.g. Python, React, Project Management). AI will categorize them.</p>
-                    {{ form.skills }}
-                </div>
-            </div>
-
-            <!-- Sticky Generate Button inside left column mobile, floating on desktop -->
-            <div class="mt-8 z-40 relative">
-                <button type="submit" id="submitBtn" class="w-full py-4 px-6 bg-gradient-to-r from-primary to-secondary hover:from-indigo-600 hover:to-purple-600 text-white font-heading font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2">
-                    ✨ Generate Smart Resume
-                </button>
-            </div>
-        </form>
+<div class="max-w-4xl mx-auto pb-24">
+    <div class="mb-8">
+        <h1 class="text-3xl font-heading font-bold text-white mb-2">Build Your Smart Resume</h1>
+        <p class="text-textSecondary">Fill out the details below. Our AI will analyze, enhance, and optimize it for ATS systems automatically.</p>
     </div>
 
-    <!-- Right Column: Live Preview Placeholder & Loading Overlay -->
-    <div class="hidden lg:block relative">
-        <div class="sticky top-24 w-full h-[calc(100vh-8rem)] rounded-xl overflow-hidden shadow-2xl flex items-center justify-center bg-gray-900 border border-gray-800 transition-all duration-500" id="previewContainer">
-            
-            <!-- White paper placeholder -->
-            <div class="w-[85%] h-[90%] bg-white rounded shadow-inner p-8 flex flex-col gap-4 opacity-50 blur-[2px] transition-all duration-500" id="paperPreview">
-                <div class="w-1/2 h-6 bg-gray-300 rounded mb-4"></div>
-                <div class="w-1/4 h-3 bg-gray-200 rounded"></div>
-                <div class="w-full h-px bg-gray-300 my-2"></div>
-                <div class="w-3/4 h-4 bg-gray-200 rounded mt-4"></div>
-                <div class="w-full h-3 bg-gray-200 rounded mb-1"></div>
-                <div class="w-full h-3 bg-gray-200 rounded mb-1"></div>
-                <div class="w-5/6 h-3 bg-gray-200 rounded"></div>
-                <div class="w-full h-px bg-gray-300 my-2"></div>
-                <div class="w-3/4 h-4 bg-gray-200 rounded mt-4"></div>
-                <div class="w-full h-3 bg-gray-200 rounded mb-1"></div>
-            </div>
+    <form method="post" enctype="multipart/form-data" id="resumeForm" onsubmit="showLoader()">
+        {% csrf_token %}
 
-            <!-- Loading Overlay -->
-            <div id="loadingOverlay" class="absolute inset-0 bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 transition-opacity duration-500 opacity-0 pointer-events-none">
-                <!-- Glowing Orb Spinner -->
-                <div class="relative w-24 h-24 mb-8">
-                    <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
-                    <div class="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin"></div>
-                    <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse"></div>
-                </div>
-                
-                <h3 class="text-xl font-heading font-bold text-white mb-2">Generating Resume...</h3>
-                <p id="loadingStep" class="text-textSecondary font-medium tracking-wide animate-pulse">Analyzing profile data...</p>
-            </div>
+        <!-- Global Error Display -->
+        {% if form.errors or education.errors or experience.errors or project.errors or skill.errors or certification.errors or achievement.errors or activity.errors or language.errors or interest.errors or social_link.errors %}
+        <div class="glass-card p-4 rounded-xl mb-6 border-l-4 border-l-error bg-error/10">
+            <h3 class="text-error font-semibold mb-2">Please correct the following errors:</h3>
+            <ul class="list-disc list-inside text-sm text-gray-300">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li><strong>Personal Info - {{ field.label }}:</strong> {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li><strong>Personal Info:</strong> {{ error }}</li>
+                {% endfor %}
 
+                {% for fs, fs_name in zip_formsets|default:"" %}
+                <!-- Note: we can't easily zip in template without custom tags, so we'll just check them individually -->
+                {% endfor %}
+
+                {% for f in education %}{% for field in f %}{% for error in field.errors %}<li><strong>Education:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in experience %}{% for field in f %}{% for error in field.errors %}<li><strong>Experience:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in project %}{% for field in f %}{% for error in field.errors %}<li><strong>Project:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in skill %}{% for field in f %}{% for error in field.errors %}<li><strong>Skill:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in certification %}{% for field in f %}{% for error in field.errors %}<li><strong>Certification:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in achievement %}{% for field in f %}{% for error in field.errors %}<li><strong>Achievement:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in activity %}{% for field in f %}{% for error in field.errors %}<li><strong>Activity:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in language %}{% for field in f %}{% for error in field.errors %}<li><strong>Language:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in interest %}{% for field in f %}{% for error in field.errors %}<li><strong>Interest:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+                {% for f in social_link %}{% for field in f %}{% for error in field.errors %}<li><strong>Social Link:</strong> {{ field.label }} - {{ error }}</li>{% endfor %}{% endfor %}{% endfor %}
+            </ul>
         </div>
+        {% endif %}
+
+        <!-- Section 1: Personal Information -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">👤</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Personal Information</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-row"><label>Full Name *</label>{{ form.full_name }}</div>
+                <div class="form-row"><label>Professional Title</label>{{ form.professional_title }}</div>
+                <div class="form-row"><label>Email *</label>{{ form.email }}</div>
+                <div class="form-row"><label>Phone *</label>{{ form.phone }}</div>
+                <div class="form-row"><label>City</label>{{ form.city }}</div>
+                <div class="form-row"><label>State</label>{{ form.state }}</div>
+                <div class="form-row"><label>Country</label>{{ form.country }}</div>
+                <div class="form-row"><label>LinkedIn URL</label>{{ form.linkedin }}</div>
+                <div class="form-row"><label>GitHub URL</label>{{ form.github }}</div>
+                <div class="form-row"><label>Portfolio URL</label>{{ form.portfolio_url }}</div>
+                <div class="form-row md:col-span-2"><label>Profile Photo</label>{{ form.profile_photo }}</div>
+            </div>
+        </div>
+
+        <!-- Section 2: Professional Summary & Target Job -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">🎯</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Summary & Target Job</h3>
+            </div>
+            <div class="form-row">
+                <label>Professional Summary / Career Objective</label>
+                <p class="text-xs text-textSecondary mb-2">Write a brief summary. AI will refine it for your target role.</p>
+                {{ form.professional_summary }}
+            </div>
+            <div class="form-row mt-4">
+                <label>Target Job Role</label>
+                <p class="text-xs text-textSecondary mb-2">Select your targeted job role for ATS optimization.</p>
+                {{ form.job_description }}
+            </div>
+        </div>
+
+        <!-- Section 3: Education -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">🎓</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Education</h3>
+            </div>
+            {{ education.management_form }}
+            <div id="education-forms">
+                {% for f in education %}
+                <div class="formset-entry border border-gray-700/50 rounded-xl p-4 mb-4 relative">
+                    <button type="button" onclick="removeForm(this)" class="absolute top-2 right-2 text-error hover:text-red-400 text-sm">✕ Remove</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="form-row"><label>Degree</label>{{ f.degree }}</div>
+                        <div class="form-row"><label>Field of Study</label>{{ f.field_of_study }}</div>
+                        <div class="form-row"><label>Institution</label>{{ f.institution }}</div>
+                        <div class="form-row"><label>Board/University</label>{{ f.board_university }}</div>
+                        <div class="form-row"><label>Start Year</label>{{ f.start_year }}</div>
+                        <div class="form-row"><label>End Year</label>{{ f.end_year }}</div>
+                        <div class="form-row flex items-center gap-2"><label class="!mb-0">Currently Studying</label>{{ f.currently_studying }}</div>
+                        <div class="form-row"><label>Grade</label>{{ f.grade }}</div>
+                        <div class="form-row"><label>Grade Type</label>{{ f.grade_type }}</div>
+                        <div class="form-row"><label>Location</label>{{ f.location }}</div>
+                        <div class="form-row md:col-span-2"><label>Description</label>{{ f.description }}</div>
+                    </div>
+                    {{ f.order }}<div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('education')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Education</button>
+        </div>
+
+        <!-- Section 4: Experience -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400">💼</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Work Experience</h3>
+            </div>
+            {{ experience.management_form }}
+            <div id="experience-forms">
+                {% for f in experience %}
+                <div class="formset-entry border border-gray-700/50 rounded-xl p-4 mb-4 relative">
+                    <button type="button" onclick="removeForm(this)" class="absolute top-2 right-2 text-error hover:text-red-400 text-sm">✕ Remove</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="form-row"><label>Job Title</label>{{ f.job_title }}</div>
+                        <div class="form-row"><label>Company Name</label>{{ f.company_name }}</div>
+                        <div class="form-row"><label>Employment Type</label>{{ f.employment_type }}</div>
+                        <div class="form-row"><label>Start Date</label>{{ f.start_date }}</div>
+                        <div class="form-row"><label>End Date</label>{{ f.end_date }}</div>
+                        <div class="form-row flex items-center gap-2"><label class="!mb-0">Currently Working</label>{{ f.currently_working }}</div>
+                        <div class="form-row"><label>Location</label>{{ f.location }}</div>
+                        <div class="form-row md:col-span-2"><label>Description (one bullet per line)</label>{{ f.description }}</div>
+                    </div>
+                    {{ f.order }}<div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('experience')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Experience</button>
+        </div>
+
+        <!-- Section 5: Projects -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400">🚀</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Projects</h3>
+            </div>
+            {{ project.management_form }}
+            <div id="project-forms">
+                {% for f in project %}
+                <div class="formset-entry border border-gray-700/50 rounded-xl p-4 mb-4 relative">
+                    <button type="button" onclick="removeForm(this)" class="absolute top-2 right-2 text-error hover:text-red-400 text-sm">✕ Remove</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="form-row"><label>Project Title</label>{{ f.title }}</div>
+                        <div class="form-row"><label>Technologies (comma separated)</label>{{ f.technologies }}</div>
+                        <div class="form-row"><label>GitHub URL</label>{{ f.github_url }}</div>
+                        <div class="form-row"><label>Live Demo URL</label>{{ f.live_demo_url }}</div>
+                        <div class="form-row"><label>Start Date</label>{{ f.start_date }}</div>
+                        <div class="form-row"><label>End Date</label>{{ f.end_date }}</div>
+                        <div class="form-row md:col-span-2"><label>Description (one bullet per line)</label>{{ f.description }}</div>
+                        <div class="form-row md:col-span-2"><label>Project Image</label>{{ f.image }}</div>
+                    </div>
+                    {{ f.order }}<div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('project')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Project</button>
+        </div>
+
+        <!-- Section 6: Skills -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400">🛠️</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Skills</h3>
+            </div>
+            <p class="text-xs text-textSecondary mb-3">Add individual skills with their category.</p>
+            {{ skill.management_form }}
+            <div id="skill-forms">
+                {% for f in skill %}
+                <div class="formset-entry flex items-center gap-3 mb-3">
+                    <div class="flex-1">{{ f.category }}</div>
+                    <div class="flex-1">{{ f.name }}</div>
+                    <div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                    <button type="button" onclick="removeForm(this)" class="text-error hover:text-red-400 text-sm flex-shrink-0">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('skill')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Skill</button>
+        </div>
+
+        <!-- Section 7: Certifications -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center text-yellow-400">📜</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Certifications</h3>
+            </div>
+            {{ certification.management_form }}
+            <div id="certification-forms">
+                {% for f in certification %}
+                <div class="formset-entry border border-gray-700/50 rounded-xl p-4 mb-4 relative">
+                    <button type="button" onclick="removeForm(this)" class="absolute top-2 right-2 text-error hover:text-red-400 text-sm">✕ Remove</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="form-row"><label>Certification Name</label>{{ f.name }}</div>
+                        <div class="form-row"><label>Issuing Organization</label>{{ f.issuing_organization }}</div>
+                        <div class="form-row"><label>Issue Date</label>{{ f.issue_date }}</div>
+                        <div class="form-row"><label>Credential ID</label>{{ f.credential_id }}</div>
+                        <div class="form-row md:col-span-2"><label>Certificate URL</label>{{ f.certificate_url }}</div>
+                    </div>
+                    {{ f.order }}<div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('certification')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Certification</button>
+        </div>
+
+        <!-- Section 8: Achievements -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">🏆</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Achievements</h3>
+            </div>
+            {{ achievement.management_form }}
+            <div id="achievement-forms">
+                {% for f in achievement %}
+                <div class="formset-entry border border-gray-700/50 rounded-xl p-4 mb-4 relative">
+                    <button type="button" onclick="removeForm(this)" class="absolute top-2 right-2 text-error hover:text-red-400 text-sm">✕ Remove</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="form-row"><label>Title</label>{{ f.title }}</div>
+                        <div class="form-row"><label>Organization/Event</label>{{ f.organization }}</div>
+                        <div class="form-row"><label>Date</label>{{ f.date }}</div>
+                        <div class="form-row md:col-span-2"><label>Description</label>{{ f.description }}</div>
+                    </div>
+                    {{ f.order }}<div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('achievement')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Achievement</button>
+        </div>
+
+        <!-- Section 9: Extra-Curricular Activities -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center text-teal-400">🎭</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Extra-Curricular Activities</h3>
+            </div>
+            {{ activity.management_form }}
+            <div id="activity-forms">
+                {% for f in activity %}
+                <div class="formset-entry border border-gray-700/50 rounded-xl p-4 mb-4 relative">
+                    <button type="button" onclick="removeForm(this)" class="absolute top-2 right-2 text-error hover:text-red-400 text-sm">✕ Remove</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="form-row"><label>Activity Title</label>{{ f.title }}</div>
+                        <div class="form-row"><label>Organization</label>{{ f.organization }}</div>
+                        <div class="form-row"><label>Date</label>{{ f.date }}</div>
+                        <div class="form-row md:col-span-2"><label>Description</label>{{ f.description }}</div>
+                    </div>
+                    {{ f.order }}<div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('activity')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Activity</button>
+        </div>
+
+        <!-- Section 10: Languages -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400">🌐</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Languages Known</h3>
+            </div>
+            {{ language.management_form }}
+            <div id="language-forms">
+                {% for f in language %}
+                <div class="formset-entry flex items-center gap-3 mb-3">
+                    <div class="flex-1">{{ f.name }}</div>
+                    <div class="flex-1">{{ f.proficiency }}</div>
+                    <div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                    <button type="button" onclick="removeForm(this)" class="text-error hover:text-red-400 text-sm flex-shrink-0">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('language')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Language</button>
+        </div>
+
+        <!-- Section 11: Interests -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center text-pink-400">❤️</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Interests / Hobbies</h3>
+            </div>
+            {{ interest.management_form }}
+            <div id="interest-forms">
+                {% for f in interest %}
+                <div class="formset-entry flex items-center gap-3 mb-3">
+                    <div class="flex-1">{{ f.name }}</div>
+                    <div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                    <button type="button" onclick="removeForm(this)" class="text-error hover:text-red-400 text-sm flex-shrink-0">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('interest')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Interest</button>
+        </div>
+
+        <!-- Section 12: Social Links -->
+        <div class="glass-card p-6 rounded-2xl mb-6 hover:border-primary/30 transition-colors">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center text-rose-400">🔗</div>
+                <h3 class="text-lg font-heading font-semibold text-white">Social Links</h3>
+            </div>
+            {{ social_link.management_form }}
+            <div id="social_link-forms">
+                {% for f in social_link %}
+                <div class="formset-entry flex items-center gap-3 mb-3">
+                    <div class="flex-1">{{ f.platform }}</div>
+                    <div class="flex-1">{{ f.url }}</div>
+                    <div class="hidden">{{ f.id }}{{ f.DELETE }}</div>
+                    <button type="button" onclick="removeForm(this)" class="text-error hover:text-red-400 text-sm flex-shrink-0">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" onclick="addForm('social_link')" class="text-primary hover:text-indigo-400 text-sm font-medium mt-2">+ Add Social Link</button>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-8">
+            <button type="submit" id="submitBtn" class="w-full py-4 px-6 bg-gradient-to-r from-primary to-secondary hover:from-indigo-600 hover:to-purple-600 text-white font-heading font-bold text-lg rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2">
+                ✨ Generate Smart Resume
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center z-50 transition-opacity duration-500 opacity-0 pointer-events-none">
+    <div class="relative w-24 h-24 mb-8">
+        <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+        <div class="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin"></div>
+        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse"></div>
     </div>
+    <h3 class="text-xl font-heading font-bold text-white mb-2">Generating Resume...</h3>
+    <p id="loadingStep" class="text-textSecondary font-medium tracking-wide animate-pulse">Analyzing profile data...</p>
 </div>
 
 <script>
+    const formTemplates = {};
+    document.addEventListener('DOMContentLoaded', () => {
+        ['education', 'experience', 'project', 'skill', 'certification', 'achievement', 'activity', 'language', 'interest', 'social_link'].forEach(prefix => {
+            const container = document.getElementById(prefix + '-forms');
+            if (container) {
+                const entries = container.querySelectorAll('.formset-entry');
+                if (entries.length > 0) {
+                    formTemplates[prefix] = entries[0].cloneNode(true);
+                }
+            }
+        });
+    });
+
+    // Dynamic formset add/remove
+    function addForm(prefix) {
+        const container = document.getElementById(prefix + '-forms');
+        const totalInput = document.getElementById('id_' + prefix + '-TOTAL_FORMS');
+        const total = parseInt(totalInput.value);
+        
+        let newForm;
+        if (formTemplates[prefix]) {
+            newForm = formTemplates[prefix].cloneNode(true);
+        } else {
+            const entries = container.querySelectorAll('.formset-entry');
+            if (entries.length > 0) {
+                newForm = entries[0].cloneNode(true);
+            } else {
+                return;
+            }
+        }
+        
+        // Clear all input values in the clone
+        newForm.querySelectorAll('input:not([type=hidden]),textarea,select').forEach(el => {
+            if (el.type === 'checkbox') el.checked = false;
+            else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+            else el.value = '';
+        });
+        
+        // Make sure the cloned form is visible (it may have been hidden by removeForm)
+        newForm.style.display = '';
+        // Update all name/id attributes with new index
+        newForm.querySelectorAll('[name],[id]').forEach(el => {
+            if (el.name) el.name = el.name.replace(/-\d+-/, '-' + total + '-');
+            if (el.id) el.id = el.id.replace(/-\d+-/, '-' + total + '-');
+        });
+        // Clear hidden ID field (so Django creates a new object)
+        const idField = newForm.querySelector('[name$="-id"]');
+        if (idField) idField.value = '';
+        // Ensure DELETE is unchecked
+        const delField = newForm.querySelector('[name$="-DELETE"]');
+        if (delField) delField.checked = false;
+        container.appendChild(newForm);
+        totalInput.value = total + 1;
+    }
+
+    function removeForm(btn) {
+        const entry = btn.closest('.formset-entry');
+        const delCheckbox = entry.querySelector('[name$="-DELETE"]');
+        if (delCheckbox) {
+            delCheckbox.checked = true;
+            entry.style.display = 'none';
+        } else {
+            entry.remove();
+        }
+    }
+
     function showLoader() {
         const btn = document.getElementById('submitBtn');
-        btn.innerHTML = `
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Processing...
-        `;
+        btn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...';
         btn.classList.add('opacity-80', 'cursor-not-allowed');
-        btn.classList.remove('hover:scale-[1.02]');
-        
         const overlay = document.getElementById('loadingOverlay');
-        const paper = document.getElementById('paperPreview');
-        if(overlay) {
-            overlay.classList.remove('opacity-0', 'pointer-events-none');
-            paper.classList.add('scale-95', 'blur-sm');
-        }
-
-        const steps = [
-            "Analyzing profile data...",
-            "Enhancing experience with action verbs...",
-            "Extracting keywords from Job Description...",
-            "Optimizing skills for ATS...",
-            "Simulating ATS evaluation..."
-        ];
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        const steps = ["Analyzing profile data...","Enhancing experience...","Extracting ATS keywords...","Optimizing skills...","Generating resume...","Running ATS analysis..."];
         const stepEl = document.getElementById('loadingStep');
         let i = 0;
-        setInterval(() => {
-            if(i < steps.length) {
-                stepEl.innerText = steps[i];
-                i++;
-            }
-        }, 4000);
+        setInterval(() => { if(i < steps.length) { stepEl.innerText = steps[i]; i++; } }, 3500);
     }
 </script>
 {% endblock %}

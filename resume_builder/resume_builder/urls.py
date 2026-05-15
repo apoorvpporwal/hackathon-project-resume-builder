@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from resumes import views  # Import your app's views
 
 urlpatterns = [
@@ -23,4 +25,8 @@ urlpatterns = [
     path('resumes/', include('resumes.urls')),  # Existing path for your app
     path('', views.create_resume, name='home'),  # Default path to your form view
 ]
+
+# Serve media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
